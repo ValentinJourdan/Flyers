@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Éditeur de texte</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      height: 100vh;
+      background-color: #f0f0f0;
+    }
+
+    #editor-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #editor {
+      width: 80%;
+      height: 80%;
+      padding: 20px;
+      background-color: #fff;
+      color: #000;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      outline: none;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      position: relative;
+    }
+
+    .sidebar {
+      width: 200px;
+      background-color: #fff;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      color: #333;
+    }
+
+    .sidebar button {
+      margin-bottom: 10px;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      color: #333;
+      background-color: #ddd;
+      transition: background-color 0.3s ease-in-out;
+    }
+
+    .sidebar button:hover {
+      background-color: #bbb;
+    }
+
+    .color-picker {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    #title {
+    text-align: center;
+      font-size: 34px;
+      font-family: 'Poppins', sans-serif;
+      margin-left: 280px; /* Marge à gauche pour l'éloigner du bord */
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    select {
+      width: 100%;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin-bottom: 10px;
+    }
+
+    table,
+    td {
+      border: 1px solid #aaa;
+      padding: 5px;
+    }
+  </style>
+</head>
+<body>
+    <div id="title" attr="{{eId}}">R<br>O<br>A<br>D<br>M<br>A<br>P</div>
+
+  <div class="sidebar">
+    <div class="toolbox">
+      <button onclick="toggleBold()"><strong>B</strong></button>
+      <button onclick="toggleUnderline()"><u>U</u></button>
+    </div>
+    <div class="color-picker">
+      <input type="color" onchange="changeTextColor(this.value)" title="Couleur Texte">
+      <input type="color" onchange="changeBackgroundColor(this.value)" title="Couleur Fond">
+    </div>
+    <select onchange="alignText(this.value)">
+      <option value="left">Aligner à gauche</option>
+      <option value="center">Centrer</option>
+      <option value="right">Aligner à droite</option>
+      <option value="justify">Justifier</option>
+    </select>
+    <div class="toolbox">
+      <button onclick="changeFontSize('increase')">+</button>
+      <button onclick="changeFontSize('decrease')">-</button>
+    </div>
+    <div class="toolbox">
+      <button onclick="toggleList('unordered')">• Liste</button>
+      <button onclick="toggleList('ordered')">1. Liste</button>
+    </div>
+    <button onclick="insertTable()">Insérer un tableau</button>
+    <input type="file" id="imgFileInput" style="display: none;" accept="image/*">
+    <button onclick="document.getElementById('imgFileInput').click()">Insérer une image</button>
+    <button onclick="sauvegarderContenu()">Sauvegarder</button>
+  </div>
+
+  <div id="editor-container">
+    <div id="editor" contenteditable="true">
+    </div>
+  </div>
+
+  <script>
+    const eId = document.getElementById('title').getAttribute('attr');
+      console.log(eId);
+    function toggleBold() {
+      document.execCommand('bold', false, null);
+    }
+
+    function toggleUnderline() {
+      document.execCommand('underline', false, null);
+    }
+
+    function changeTextColor(color) {
+      document.execCommand('foreColor', false, color);
+    }
+
+    function changeBackgroundColor(color) {
+      document.execCommand('backColor', false, color);
+    }
+
+    function alignText(align) {
+      document.execCommand('justify' + align, false, null);
+    }
+
+    function changeFontSize(action) {
+      const fontSize = window.getComputedStyle(document.getElementById('editor'), null).getPropertyValue('font-size');
+      const currentSize = parseFloat(fontSize);
+      const newSize = action === 'increase' ? currentSize * 1.2 : currentSize / 1.2;
+      document.execCommand('fontSize', false, newSize);
+    }
+
+    function toggleList(type) {
+      document.execCommand(type === 'unordered' ? 'insertUnorderedList' : 'insertOrderedList', false, null);
+    }
+
+    function insertTable() {
+      const rows = prompt("Entrez le nombre de lignes du tableau :", "3");
+      const columns = prompt("Entrez le nombre de colonnes du tableau :", "3");
+      if (rows && columns) {
+        let tableHTML = '<table>';
+        for (let i = 0; i < rows; i++) {
+          tableHTML += '<tr>';
+          for (let j = 0; j < columns; j++) {
+            tableHTML += '<td contenteditable="true">Texte</td>';
+          }
+          tableHTML += '</tr>';
+        }
+        tableHTML += '</table>';
+        document.execCommand('insertHTML', false, tableHTML);
+      }
+    }
+
+    function sauvegarderContenu() {
+      const contenu = document.getElementById('editor').innerHTML;
+      localStorage.setItem(`${eId}`, contenu);
+      const notification = new Notification('Contenu sauvegardé !');
+      setTimeout(notification.close.bind(notification), 3000);
+    }
+
+    const contenuSauvegarde = localStorage.getItem(`${eId}`);
+    if (contenuSauvegarde) {
+      document.getElementById('editor').innerHTML = contenuSauvegarde;
+    }
+  </script>
+</body>
+</html>
+
+
+

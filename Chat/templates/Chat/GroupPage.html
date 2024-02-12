@@ -1,0 +1,25 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ma page de groupes</title>
+    <!-- Inclusion du fichier JavaScript -->
+</head>
+
+<body>
+<div>
+    <h1> Mes groupes de discussion : </h1>
+    {% for room in rooms %}
+<a href="{% url 'Room_chat' room.eId %}">
+    <button>{{room.name}}</button></a>
+    <a href="{% url 'Roadmap' room.eId %}"><button>Roadmap</button></a>
+    <br>
+    <br>
+    {% endfor %}
+</div>
+</body>
+<script src="../../static/Flow/js/flow.js"></script>
+<style>
+    
+</style>

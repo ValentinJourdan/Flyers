@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        {% load static %}
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="stylesheet" href="{% static 'Chat/css/styles.css' %}">
+        <title>Profil</title>
+    </head>
+    <body>
+        <h1 class=""> {{ other.name }}</h1>
+        <p class="texte">{{ other.email }}</p><br>
+        {% if other.avatar %}
+            <img class="profile-picture" src="{{ other.avatar.url }}" alt="Profile Picture">
+        {% else %}
+            <img class="profile-picture" src="{% static 'Authentication/img/avatar/default.jpg' %}" alt="Profile Picture">
+        {% endif %}
+        <br>
+
+        {% if self.email == other.email %}
+        {%if not other.is_validated_money_man and not other.money_man_request_pending%}
+        <form action="{% url 'demande_validation'%}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="bouton">Demander à pouvoir recevoir des paiements</button>
+        </form>
+        {%endif%}
+        {%if other.money_man_request_pending%}
+            <p class="texte">Vous êtes en attente de validation pour recevoir des paiements</p>
+        {%endif%}
+        {%if other.is_validated_money_man and not other.money_man_request_pending%}
+            <p class="texte">Vous pouvez recevoir des paiements</p>
+        {%endif%}
+        {% if other.is_validated_money_man %}
+            <form action="{% url 'create_stripe_connect_account' %}" method="post">
+                {% csrf_token %}
+                <button class="bouton" type="submit">Créer un compte Connect</button>
+            </form>
+        {% endif %}
+        <form action="{% url 'modify_profile'%}" method="get">
+            {% csrf_token %}
+            <button type="submit" class="bouton">Editer mon profil</button>
+        </form>
+        {% endif %}
+    </body>
+</html>

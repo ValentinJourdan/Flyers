@@ -1,0 +1,53 @@
+{% extends 'Flow/base.html' %}
+{% load static %}
+{% block head %}<link href="{% static 'Flow/css/home.css' %}" rel="stylesheet" />
+<link href="{% static 'Flow/css/profile.css' %}" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+    <div class="global-container">
+        <h1 class="">Bonjour {{ user.name }},</h1>
+        <div class="profile-container">
+            <div class="left-section">
+                <h2>Vos informations</h2>
+                <p class="texte">Pseudo : {{ user.name }}</p>
+                <p class="texte">Email : {{ user.email }}</p>
+                {%if not user.is_validated_money_man and not user.money_man_request_pending%}
+                    <form action="{% url 'demande_validation'%}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="link-profile">Demander à pouvoir recevoir des paiements</button>
+                    </form>
+                {%endif%}
+                {%if user.money_man_request_pending%}
+                    <p class="texte">Vous êtes en attente de validation pour recevoir des paiements</p>
+                {%endif%}
+                {%if user.is_validated_money_man and not user.money_man_request_pending%}
+                    <p class="texte">Vous pouvez recevoir des paiements</p>
+                {%endif%}
+                {% if user.is_validated_money_man %}
+                    <form action="{% url 'create_stripe_connect_account' %}" method="post">
+                        {% csrf_token %}
+                        <button class="link-profile" type="submit">Créer un compte Connect</button>
+                    </form>
+                {% endif %}
+                <form action="{% url 'modify_profile'%}" method="get">
+                    {% csrf_token %}
+                    <button type="submit" class="link-profile">Editer mon profil</button>
+                </form>
+                <a class="link-profile" href="{% url 'logout' %}">Se déconnecter</a>
+            </div>
+            <div class="right-section">
+                {% if user.avatar %}
+                    <img class="profile-picture" src="{{ user.avatar.url }}" alt="Profile Picture">
+                {% else %}
+                    <img class="profile-picture" src="{% static 'Authentication/img/avatar/default.jpg' %}" alt="Profile Picture">
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+
+{% block script %}<script src="../../static/Flow/js/flow.js"></script> {% endblock %}
+

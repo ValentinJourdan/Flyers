@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Salons de discussion</title>
+    <link rel="stylesheet" href="../static/Chat/css/Room_chat.css">
+</head>
+
+<body>
+<h2> {{room.name}}</h2>
+
+<div class="zone_body">
+
+<div class="infos/gestion">
+    <b>Membres </b>
+    {% for  member in event.members.all %}
+       <a href="{% url 'member_profile' member.id %}"><div class="member"> 
+        {{member.username}}
+    {% endfor %}
+    <a href="{% url 'Roadmap' room.eId %}"><button>Roadmap</button></a>
+</div></a>
+</div>
+
+<div id="chatLogElement">
+
+{% for message in room.messages.all %}
+        {% if user.username == message.sent_by %}
+            <div class="message_self"> 
+
+
+                <p class="content_message">{{message.body}}</p>
+                <i><p class ="message_info">{{message.sent_by}}-{{message.created_at}}</p></i>
+
+                </div>
+        {% else %}
+            <div class="message_other"> 
+
+                <p class="content_message">{{message.body}}</p>
+                <i><p class ="message_info">{{message.sent_by}}-{{message.created_at}}</p></i>
+
+                </div>
+        {% endif %}
+{% endfor %}
+</div>
+<div id="Chat_onwritting"></div>
+</div>
+<div id="chatzone" data-eId="{{ eId }}">
+    <input id="chatInputElement" value="">
+    <button id="EnvoiMess">Envoyer</button>
+
+    <form id="fileForm">
+        <label for="fileInput"> Médias </label>
+    <input id='fileInput' type='file' accept="image/*">
+<button type="button" id="fileSend">Send</button></form>
+
+</div>
+</body>
+<style>
+
+</style>
+<script>
+    chatLogElement=document.getElementById('chatLogElement');
+
+    const u = chatzone.getAttribute('data-eId');
+    console.log(u);
+    chatSocket = new WebSocket(`ws://${window.location.host}/ws/${u}/`)
+    function scrollChatToBottom() {
+    chatLogElement.scrollTop = chatLogElement.scrollHeight;
+}
+window.onload = function() {
+    scrollChatToBottom(); // Appeler la fonction pour faire défiler vers le bas au chargement
+};
+
+chatSocket.onmessage = function(e) {
+    console.log('onMessage');
+    const data = JSON.parse(e.data);
+    const user_id = data.user_id;
+    console.log('User ID received from server:', user_id);
+    onChatMessage(data, user_id);
+};
+
+chatSocket.onopen = function(e) {
+    console.log('onOpen - chat socket was opened');
+
+};
+
+chatSocket.onclose = function(e) {
+    console.log('onClose - chat socket was closed');
+};
+
+</script>
+
+<script src="../../static/Flow/js/flow.js"></script>
+
+

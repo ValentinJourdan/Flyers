@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    {% load static %}
+    <link href="{% static 'Authentication/css/styles.css' %}" rel="stylesheet" />
+    <link href="{% static 'Flow/css/base.css' %}" rel="stylesheet" />
+    <link rel="icon" type="image/png" href="{% static 'Flow/assets/img/logo.png' %}">
+
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <a class="logo" href="{% url 'home' %}"><img src="{% static 'Flow/assets/img/logo.png' %}" alt="Logo"></a>
+    <div class="form-container">
+        <h1>Connexion</h1>
+        <p >{{ message }}</p>
+        <form method="post">
+            {% if form.errors %}
+                <p class="error-message">Identifients incorrects. Veuillez réessayer.</p>
+            {% endif %}
+            {% for field in form %}
+                <div class="form-group">
+                    {{ field.label_tag }} {{ field }}
+                    {% if field.help_text %}
+                        <small class="form-text text-muted">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% if field.errors %}
+                        <div class="alert alert-danger">
+                            {% for error in field.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            {% csrf_token %}
+            <button class="button-login" type="submit" >Se connecter</button>
+        </form>
+        <p>Vous n'êtes pas inscrits ? 
+            <a href = "{% url 'signin' %}">S'inscrire</a>
+        </p>
+    </div>
+    
+</body>
+</html>
+    
